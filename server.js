@@ -40,9 +40,9 @@ io.on('connection', (socket) => {
     console.log('user disconnected');
   });
 
-  // socket.on('send-message', (payload) => {
-  //   socket.broadcast.emit('message', payload);
-  // });
+  socket.on('peer-leave', (payload) => {
+    socket.broadcast.emit('peer-leave', payload);
+  });
 
   socket.on('offer', (offer) => {
     console.log("offer", offer)
