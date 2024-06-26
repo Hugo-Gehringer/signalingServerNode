@@ -36,8 +36,9 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('candidate', candidate);
   });
 
-  socket.on('disconnect', () => {
+  socket.on('disconnect', (payload) => {
     console.log('user disconnected');
+    socket.broadcast.emit('disconnect', payload);
   });
 
   socket.on('peer-leave', (payload) => {
