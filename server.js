@@ -23,12 +23,12 @@ io.on('connection', (socket) => {
   console.log('a user connected');
 
   socket.on('offer', (offer) => {
-    console.log("offer", offer)
+    // console.log("offer", offer)
     socket.broadcast.emit('offer', offer);
   });
 
   socket.on('answer', (answer) => {
-    console.log("answer", answer)
+    // console.log("answer", answer)
     socket.broadcast.emit('answer', answer);
   });
 
@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', (payload) => {
     console.log('user disconnected');
-    socket.broadcast.emit('disconnect', payload);
+    socket.broadcast.emit('peer-leave', socket.id);
   });
 
   socket.on('peer-leave', (payload) => {
@@ -46,9 +46,15 @@ io.on('connection', (socket) => {
   });
 
   socket.on('offer', (offer) => {
-    console.log("offer", offer)
+    // console.log("offer", offer)
     socket.broadcast.emit('offer', offer); // Sends the 'offer' to all other connected clients
   });
+
+  socket.on('toggle-mute', (peerId) => {
+    // console.log("offer", offer)
+    socket.broadcast.emit('toggle-mute', peerId);
+  });
+
 });
 
 
