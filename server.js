@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
-const { Server } = require("socket.io");
+const {Server} = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
@@ -19,40 +19,43 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'] // Allow specific headers
 }));
 
-let peers = {};
-
 io.on('connection', (socket) => {
   console.log('a user connected');
-  peers[socket.id] = socket.id;
-
-  // Send the list of current peers to the newly connected client
-  socket.emit('existingPeers', Object.keys(peers));
-
-  // Notify existing clients about the new peer
-  socket.broadcast.emit('newPeer', socket.id);
 
   socket.on('offer', (offer) => {
-    socket.to(offer.peerId).emit('offer', offer);
+    // console.log("offer", offer)
+    socket.broadcast.emit('offer', offer);
   });
 
   socket.on('answer', (answer) => {
-    socket.to(answer.peerId).emit('answer', answer);
+    // console.log("answer", answer)
+    socket.broadcast.emit('answer', answer);
   });
 
   socket.on('candidate', (candidate) => {
-    socket.to(candidate.peerId).emit('candidate', candidate);
+    socket.broadcast.emit('candidate', candidate);
   });
 
-  socket.on('disconnect', () => {
+  socket.on('disconnect', (payload) => {
     console.log('user disconnected');
-    delete peers[socket.id];
     socket.broadcast.emit('peer-leave', socket.id);
   });
 
-  socket.on('toggle-mute', (peerId) => {
-    socket.broadcast.emit('toggle-mute', peerId);
+  socket.on('peer-leave', (payload) => {
+    socket.broadcast.emit('peer-leave', payload);
+  });
+
+  socket.on('offer', (offer) => {
+    // console.log("offer", offer)
+    socket.broadcast.emit('offer', offer); // Sends the 'offer' to all other connected clients
+  });
+  socket.on('toggle-mute', (offer) => {
+    // console.log("offer", offer)
+    socket.broadcast.emit('offer', offer); // Sends the 'offer' to all other connected clients
   });
 });
+
+
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
